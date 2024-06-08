@@ -1,7 +1,7 @@
 # costmap_converter_
-修改了No Ros版本的costmap_converter
+去除了ROS相关的内容，No Ros版本的costmap_converter
 
-#how to run
+# how to run
 
 mkdir build
 cd build
