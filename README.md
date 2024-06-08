@@ -11,6 +11,10 @@ make
 
 ./main
 
+# more information please visit
+
+https://blog.csdn.net/qq_40464599/article/details/139549612?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22139549612%22%2C%22source%22%3A%22qq_40464599%22%7D
+
 
 costmap_converter ROS Package
 =============================
