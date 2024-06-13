@@ -11,6 +11,17 @@ make
 
 ./main
 
+# performance
+
+原始的点云分布图:
+
+![orginal_1](orginal_1.png)
+
+
+经过聚类算法处理后的图:
+
+![ClusterAlgorithm](ClusterAlgorithm.png)
+
 # more information please visit
 
 https://blog.csdn.net/qq_40464599/article/details/139549612?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22139549612%22%2C%22source%22%3A%22qq_40464599%22%7D
