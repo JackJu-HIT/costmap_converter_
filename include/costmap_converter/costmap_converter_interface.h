@@ -101,14 +101,14 @@ public:
      * @sa updateCostmap2D
      * @param costmap Pointer to the costmap2d source
      */
-    virtual void setCostmap2D( ) = 0;
+    virtual void setCostmap2D(std::vector<double> x,std::vector<double> y) = 0;
     
     /**
      * @brief Get updated data from the previously set Costmap2D
      * @warning The plugin should handle the costmap's mutex locking.
      * @sa setCostmap2D
      */
-    virtual void updateCostmap2D() = 0;
+    virtual void updateCostmap2D(std::vector<double> x,std::vector<double> y)= 0; 
     
      /**
      * @brief This method performs the actual work (conversion of the costmap to polygons)
@@ -199,7 +199,7 @@ public:
      */
     void startWorker()
     {
-      setCostmap2D();
+      //setCostmap2D(std::vector<double>x,std::vector<double>y);
       
 
 
@@ -282,7 +282,7 @@ protected:
      */
     void workerCallback()
     {
-      updateCostmap2D();
+      //updateCostmap2D();
       compute();
     }
     

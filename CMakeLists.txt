@@ -28,4 +28,7 @@ target_link_libraries(
       main
      costmap_converter
      ${Boost_SYSTEM_LIBRARY}
+     ${OpenCV_LIBS}
+     python2.7
+     ${PYTHON_LIBRARIES}
 )

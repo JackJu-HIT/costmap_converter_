@@ -173,13 +173,13 @@ void CostmapToPolygonsDBSMCCH::compute()
     updatePolygonContainer(polygons);
 }
 
-void CostmapToPolygonsDBSMCCH::setCostmap2D()
+void CostmapToPolygonsDBSMCCH::setCostmap2D(std::vector<double> x,std::vector<double> y)
 {     
     //std::cout << "CostmapToPolygonsDBSMCCH::setCostmap2D" << std::endl;
-    updateCostmap2D();
+    updateCostmap2D(x,y);
 }
 
-void CostmapToPolygonsDBSMCCH::updateCostmap2D()
+void CostmapToPolygonsDBSMCCH::updateCostmap2D(std::vector<double> x,std::vector<double> y)
 {
       //std::cout << " CostmapToPolygonsDBSMCCH::updateCostmap2D()" << std::endl;
       occupied_cells_.clear();
@@ -234,7 +234,12 @@ void CostmapToPolygonsDBSMCCH::updateCostmap2D()
         i++;
      }
     */
-    
+
+   for(int i = 0; i < x.size();i++)
+   {
+      addPoint(x[i],y[i]);
+   }
+    /*
     addPoint(10,10);
     addPoint(9.8,9.8);
     addPoint(9.8,10);
@@ -253,6 +258,7 @@ void CostmapToPolygonsDBSMCCH::updateCostmap2D()
     addPoint(1.2,1.0);
     addPoint(1.3,1.0);
     addPoint(1.4,1.0);
+    */
 
 
     //std::cout << " CostmapToPolygonsDBSMCCH::updateCostmap2D()2222" << std::endl;

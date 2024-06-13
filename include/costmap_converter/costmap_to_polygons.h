@@ -141,13 +141,13 @@ class CostmapToPolygonsDBSMCCH : public BaseCostmapToPolygons
      * @sa updateCostmap2D
      * @param costmap Pointer to the costmap2d source
      */
-    virtual void setCostmap2D();
+    virtual void setCostmap2D(std::vector<double> x,std::vector<double> y);
     
     /**
      * @brief Get updated data from the previously set Costmap2D
      * @sa setCostmap2D
      */
-    virtual void updateCostmap2D();
+    virtual void updateCostmap2D(std::vector<double> x,std::vector<double> y);
     
     
     /**
