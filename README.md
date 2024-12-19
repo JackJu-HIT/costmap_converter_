@@ -2,7 +2,7 @@
 去除了ROS相关的内容，No Ros版本的costmap_converter
 
 # how to run
-
+代码下载之后，把matplotlib-cpp.zip解压到costmap_convert_文件夹下，然后再执行下述指令
 mkdir build
 cd build
 
