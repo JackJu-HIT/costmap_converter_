@@ -40,49 +40,34 @@
 #include <costmap_converter/misc.h>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <pluginlib/class_list_macros.h>
-
-PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToLinesDBSMCCH, costmap_converter::BaseCostmapToPolygons)
 
 namespace costmap_converter
 {
 
 CostmapToLinesDBSMCCH::CostmapToLinesDBSMCCH() : CostmapToPolygonsDBSMCCH() 
 {
-    dynamic_recfg_ = NULL;
+
 }
   
 CostmapToLinesDBSMCCH::~CostmapToLinesDBSMCCH() 
 {
-  if (dynamic_recfg_ != NULL)
-    delete dynamic_recfg_;
+  
 }
   
-void CostmapToLinesDBSMCCH::initialize(ros::NodeHandle nh)
+void CostmapToLinesDBSMCCH::initialize()
 { 
     // DB SCAN
-    nh.param("cluster_max_distance", parameter_.max_distance_, 0.4);
-    nh.param("cluster_min_pts", parameter_.min_pts_, 2);
-    nh.param("cluster_max_pts", parameter_.max_pts_, 30);
-    // convex hull
-    nh.param("convex_hull_min_pt_separation", parameter_.min_keypoint_separation_, 0.1);
+    parameter_.max_distance_ = 0.4;
+    parameter_.min_pts_      = 2;
+    parameter_.max_pts_      = 30;
+    parameter_.min_keypoint_separation_ = 0.1;
     parameter_buffered_ = parameter_;
     
     // Line extraction
-    nh.param("support_pts_max_dist", support_pts_max_dist_, 0.3);
-    nh.param("support_pts_max_dist_inbetween", support_pts_max_dist_inbetween_, 1.0);
-    nh.param("min_support_pts", min_support_pts_, 2);
-    
-    // setup dynamic reconfigure
-    dynamic_recfg_ = new dynamic_reconfigure::Server<CostmapToLinesDBSMCCHConfig>(nh);
-    dynamic_reconfigure::Server<CostmapToLinesDBSMCCHConfig>::CallbackType cb = boost::bind(&CostmapToLinesDBSMCCH::reconfigureCB, this, _1, _2);
-    dynamic_recfg_->setCallback(cb);
-    
-    // deprecated
-    if (nh.hasParam("support_pts_min_dist_") || nh.hasParam("support_pts_min_dist"))
-      ROS_WARN("CostmapToLinesDBSMCCH: Parameter 'support_pts_min_dist' is deprecated and not included anymore.");
-    if (nh.hasParam("min_support_pts_"))
-      ROS_WARN("CostmapToLinesDBSMCCH: Parameter 'min_support_pts_' is not found. Remove the underscore.");
+    support_pts_max_dist_ = 0.3;
+    support_pts_max_dist_inbetween_ = 1.0;
+    min_support_pts_  = 2.0;
+    std::cout << "CostmapToLinesDBSMCCH " << std::endl;
 }  
   
 void CostmapToLinesDBSMCCH::compute()
@@ -269,19 +254,6 @@ void CostmapToLinesDBSMCCH::extractPointsAndLines(std::vector<KeyPoint>& cluster
     }
 
 }
-
-void CostmapToLinesDBSMCCH::reconfigureCB(CostmapToLinesDBSMCCHConfig& config, uint32_t level)
-{
-    boost::mutex::scoped_lock lock(parameter_mutex_);
-    parameter_buffered_.max_distance_ = config.cluster_max_distance;
-    parameter_buffered_.min_pts_ = config.cluster_min_pts;
-    parameter_buffered_.max_pts_ = config.cluster_max_pts;
-    parameter_buffered_.min_keypoint_separation_ = config.cluster_min_pts;
-    support_pts_max_dist_ = config.support_pts_max_dist;
-    support_pts_max_dist_inbetween_ = config.support_pts_max_dist_inbetween;
-    min_support_pts_ = config.min_support_pts;
-}
-
 
 
 }//end namespace costmap_converter

@@ -38,38 +38,32 @@
 
 #include <costmap_converter/costmap_to_polygons_concave.h>
 
-#include <pluginlib/class_list_macros.h>
+//#include <pluginlib/class_list_macros.h>
 
-PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToPolygonsDBSConcaveHull, costmap_converter::BaseCostmapToPolygons)
+//PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToPolygonsDBSConcaveHull, costmap_converter::BaseCostmapToPolygons)
 
 namespace costmap_converter
 {
     
 CostmapToPolygonsDBSConcaveHull::CostmapToPolygonsDBSConcaveHull() : CostmapToPolygonsDBSMCCH()
 {
-  dynamic_recfg_ = NULL;
+
 }
 
 CostmapToPolygonsDBSConcaveHull::~CostmapToPolygonsDBSConcaveHull() 
 {
-  if (dynamic_recfg_ != NULL)
-    delete dynamic_recfg_;
+ 
 }
 
-void CostmapToPolygonsDBSConcaveHull::initialize(ros::NodeHandle nh)
+void CostmapToPolygonsDBSConcaveHull::initialize()
 {
-    nh.param("cluster_max_distance", parameter_.max_distance_, 0.4);
-    nh.param("cluster_min_pts", parameter_.min_pts_, 2);
-    nh.param("cluster_max_pts", parameter_.max_pts_, 30);
-    nh.param("convex_hull_min_pt_separation", parameter_.min_keypoint_separation_, 0.1);
+    parameter_.max_distance_ = 0.4;
+    parameter_.min_pts_ = 2;
+    parameter_.max_pts_ = 30;
+    parameter_.min_keypoint_separation_ = 0.1;
     parameter_buffered_ = parameter_;
-    
-    nh.param("concave_hull_depth", concave_hull_depth_, 2.0);
-    
-    // setup dynamic reconfigure
-    dynamic_recfg_ = new dynamic_reconfigure::Server<CostmapToPolygonsDBSConcaveHullConfig>(nh);
-    dynamic_reconfigure::Server<CostmapToPolygonsDBSConcaveHullConfig>::CallbackType cb = boost::bind(&CostmapToPolygonsDBSConcaveHull::reconfigureCB, this, _1, _2);
-    dynamic_recfg_->setCallback(cb);
+
+    concave_hull_depth_ = 2.0;
 }
 
 
@@ -201,20 +195,6 @@ void CostmapToPolygonsDBSConcaveHull::concaveHullClusterCut(std::vector<KeyPoint
         }
     }
 }
-
-
-
-
-void CostmapToPolygonsDBSConcaveHull::reconfigureCB(CostmapToPolygonsDBSConcaveHullConfig& config, uint32_t level)
-{
-    boost::mutex::scoped_lock lock(parameter_mutex_);
-    parameter_buffered_.max_distance_ = config.cluster_max_distance;
-    parameter_buffered_.min_pts_ = config.cluster_min_pts;
-    parameter_buffered_.max_pts_ = config.cluster_max_pts;
-    parameter_buffered_.min_keypoint_separation_ = config.cluster_min_pts;
-    concave_hull_depth_ = config.concave_hull_depth;
-}
-
 }//end namespace costmap_converter
 
 

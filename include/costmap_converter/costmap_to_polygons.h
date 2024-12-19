@@ -39,10 +39,7 @@
 #ifndef COSTMAP_TO_POLYGONS_H_
 #define COSTMAP_TO_POLYGONS_H_
 
-//#include <ros/ros.h>
 #include <costmap_converter/costmap_converter_interface.h>
-//#include <nav_msgs/OccupancyGrid.h>
-//#include <visualization_msgs/Marker.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Polygon.h>
 #include <vector>
@@ -51,15 +48,11 @@
 #include <Eigen/StdVector>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
-
-// dynamic reconfigure
-//#include <costmap_converter/CostmapToPolygonsDBSMCCHConfig.h>
-//#include <dynamic_reconfigure/server.h>
-
+#include "tool.h"
 
 namespace costmap_converter
 {
-  
+      
 /**
  * @class CostmapToPolygonsDBSMCCH
  * @brief This class converts the costmap_2d into a set of convex polygons (and points)
@@ -98,6 +91,7 @@ class CostmapToPolygonsDBSMCCH : public BaseCostmapToPolygons
       //! Convert keypoint to geometry_msgs::Point32 message type
       void toPointMsg(geometry_msgs::Point32& point) const {point.x=x; point.y=y; point.z=0;}
     };
+   
 
     /**
      * @struct Parameters
@@ -141,13 +135,13 @@ class CostmapToPolygonsDBSMCCH : public BaseCostmapToPolygons
      * @sa updateCostmap2D
      * @param costmap Pointer to the costmap2d source
      */
-    virtual void setCostmap2D(std::vector<double> x,std::vector<double> y);
+    virtual void setCostmap2D(std::vector<double> x,std::vector<double> y,const costmapinfo &costmap);
     
     /**
      * @brief Get updated data from the previously set Costmap2D
      * @sa setCostmap2D
      */
-    virtual void updateCostmap2D(std::vector<double> x,std::vector<double> y);
+    virtual void updateCostmap2D(std::vector<double> x,std::vector<double> y,const costmapinfo &costmap);
     
     
     /**
@@ -310,23 +304,10 @@ class CostmapToPolygonsDBSMCCH : public BaseCostmapToPolygons
     boost::mutex parameter_mutex_;  //!< Mutex that keeps track about the ownership of the shared polygon instance
    
   private:
-       
-    /**
-     * @brief Callback for the dynamic_reconfigure node.
-     * 
-     * This callback allows to modify parameters dynamically at runtime without restarting the node
-     * @param config Reference to the dynamic reconfigure config
-     * @param level Dynamic reconfigure level
-     */
-   // void reconfigureCB(CostmapToPolygonsDBSMCCHConfig& config, uint32_t level);
-    
     
     PolygonContainerPtr polygons_; //!< Current shared container of polygons
     boost::mutex mutex_; //!< Mutex that keeps track about the ownership of the shared polygon instance
     
-   // dynamic_reconfigure::Server<CostmapToPolygonsDBSMCCHConfig>* dynamic_recfg_; //!< Dynamic reconfigure server to allow config modifications at runtime    
-   
-    //costmap_2d::Costmap2D *costmap_; //!< Pointer to the costmap2d
    
 }; 
 

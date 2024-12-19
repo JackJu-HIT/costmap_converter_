@@ -1,4 +1,0 @@
-/home/juchunyu/20231013/240606/git/git2/costmap_converter_/build/CMakeFiles/rebuild_cache.dir
-/home/juchunyu/20231013/240606/git/git2/costmap_converter_/build/CMakeFiles/edit_cache.dir
-/home/juchunyu/20231013/240606/git/git2/costmap_converter_/build/CMakeFiles/main.dir
-/home/juchunyu/20231013/240606/git/git2/costmap_converter_/build/CMakeFiles/costmap_converter.dir

@@ -42,9 +42,6 @@
 #include <costmap_converter/costmap_converter_interface.h>
 #include <costmap_converter/costmap_to_polygons.h>
 
-// dynamic reconfigure
-#include <costmap_converter/CostmapToLinesDBSMCCHConfig.h>
-
 namespace costmap_converter
 {
   
@@ -84,7 +81,7 @@ namespace costmap_converter
      * @brief Initialize the plugin
      * @param nh Nodehandle that defines the namespace for parameters
      */
-    virtual void initialize(ros::NodeHandle nh);
+    virtual void initialize();
     
     /**
      * @brief This method performs the actual work (conversion of the costmap to polygons)
@@ -109,20 +106,6 @@ namespace costmap_converter
     double support_pts_max_dist_inbetween_;
     double support_pts_max_dist_;
     int min_support_pts_;
-   
-  private:
-    
-    /**
-     * @brief Callback for the dynamic_reconfigure node.
-     * 
-     * This callback allows to modify parameters dynamically at runtime without restarting the node
-     * @param config Reference to the dynamic reconfigure config
-     * @param level Dynamic reconfigure level
-     */
-    void reconfigureCB(CostmapToLinesDBSMCCHConfig& config, uint32_t level);
-    
-    dynamic_reconfigure::Server<CostmapToLinesDBSMCCHConfig>* dynamic_recfg_; //!< Dynamic reconfigure server to allow config modifications at runtime   
- 
   };  
   
   

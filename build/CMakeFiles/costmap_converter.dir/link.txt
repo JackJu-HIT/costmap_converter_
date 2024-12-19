@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcostmap_converter.a  CMakeFiles/costmap_converter.dir/src/costmap_to_polygons.cpp.o
-/usr/bin/ranlib libcostmap_converter.a

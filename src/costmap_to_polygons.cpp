@@ -40,9 +40,6 @@
 #include <costmap_converter/misc.h>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-//#include <pluginlib/class_list_macros.h>
-
-//PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToPolygonsDBSMCCH, costmap_converter::BaseCostmapToPolygons)
 
 namespace
 {
@@ -106,40 +103,26 @@ namespace costmap_converter
     
 CostmapToPolygonsDBSMCCH::CostmapToPolygonsDBSMCCH() : BaseCostmapToPolygons()
 {
- // costmap_ = NULL;
-  //dynamic_recfg_ = NULL;
   neighbor_size_x_ = neighbor_size_y_ = -1;
   offset_x_ = offset_y_ = 0.;
 }
 
 CostmapToPolygonsDBSMCCH::~CostmapToPolygonsDBSMCCH() 
 {
-  //if (dynamic_recfg_ != NULL)
-   // delete dynamic_recfg_;
+
 }
 
 void CostmapToPolygonsDBSMCCH::initialize()
 {
-    ///costmap_ = NULL;
 
-    parameter_.max_distance_  = 0.8;
-    parameter_.min_pts_  = 2.0;
-    parameter_.max_pts_  =   30.0;
-    parameter_.min_keypoint_separation_ = 0.1;
-    
-    /*
-    nh.param("cluster_max_distance", parameter_.max_distance_, 0.4);
-    nh.param("cluster_min_pts", parameter_.min_pts_, 2);
-    nh.param("cluster_max_pts", parameter_.max_pts_, 30);
-    nh.param("convex_hull_min_pt_separation", parameter_.min_keypoint_separation_, 0.1);
-    */
+    parameter_.max_distance_  = 0.8;//DB_Scan 参数，与邻居的最大距离 [m]
+    parameter_.min_pts_  = 2.0;     //DB_Scan 的参数：定义一个簇的最小点数
+    parameter_.max_pts_  = 30.0;  //DB_Scan 的参数：定义一个簇的最大点数（限制簇大小以避免出现较大的 L 形和 U 形）
+    parameter_.min_keypoint_separation_ = 0.1; //清除凸多边形中彼此接近的关键点/顶点 [距离以米为单位]（0：保留全部）
+  
     
     parameter_buffered_ = parameter_;
     
-    // setup dynamic reconfigure
-   // dynamic_recfg_ = new dynamic_reconfigure::Server<CostmapToPolygonsDBSMCCHConfig>(nh);
-   // dynamic_reconfigure::Server<CostmapToPolygonsDBSMCCHConfig>::CallbackType cb = boost::bind(&CostmapToPolygonsDBSMCCH::reconfigureCB, this, _1, _2);
-   //  dynamic_recfg_->setCallback(cb);
 }
 
 
@@ -173,95 +156,40 @@ void CostmapToPolygonsDBSMCCH::compute()
     updatePolygonContainer(polygons);
 }
 
-void CostmapToPolygonsDBSMCCH::setCostmap2D(std::vector<double> x,std::vector<double> y)
-{     
-    //std::cout << "CostmapToPolygonsDBSMCCH::setCostmap2D" << std::endl;
-    updateCostmap2D(x,y);
+void CostmapToPolygonsDBSMCCH::setCostmap2D(std::vector<double> x,std::vector<double>y ,const costmapinfo &costmap)
+{    
+    updateCostmap2D(x,y,costmap);
 }
 
-void CostmapToPolygonsDBSMCCH::updateCostmap2D(std::vector<double> x,std::vector<double> y)
+void CostmapToPolygonsDBSMCCH::updateCostmap2D(std::vector<double> x,std::vector<double> y,const costmapinfo &costmap)
 {
-      //std::cout << " CostmapToPolygonsDBSMCCH::updateCostmap2D()" << std::endl;
       occupied_cells_.clear();
       
-
-      // allocate neighbor lookup
-      int cells_x = 1000;//int(costmap_->getSizeInMetersX() / parameter_.max_distance_) + 1;
-      int cells_y = 1000;//int(costmap_->getSizeInMetersY() / parameter_.max_distance_) + 1;
+     // allocate neighbor lookup
+      int cells_x = int(costmap.xMetersSize / parameter_.max_distance_) + 1;
+      int cells_y = int(costmap.yMetersSize / parameter_.max_distance_) + 1;
 
       if (cells_x != neighbor_size_x_ || cells_y != neighbor_size_y_) {
         neighbor_size_x_ = cells_x;
         neighbor_size_y_ = cells_y;
         neighbor_lookup_.resize(neighbor_size_x_ * neighbor_size_y_);
       }
-      /*
-      offset_x_ = costmap_->getOriginX();
-      offset_y_ = costmap_->getOriginY();
+      offset_x_ = costmap.orgin_x;
+      offset_y_ = costmap.orgin_y;
       for (auto& n : neighbor_lookup_)
         n.clear();
 
-      // get indices of obstacle cells
-      for(std::size_t i = 0; i < costmap_->getSizeInCellsX(); i++)
-      {
-        for(std::size_t j = 0; j < costmap_->getSizeInCellsY(); j++)
-        {
-          int value = costmap_->getCost(i,j);
-          if(value >= costmap_2d::LETHAL_OBSTACLE)
-          {
-            double x, y;
-            costmap_->mapToWorld((unsigned int)i, (unsigned int)j, x, y);
-            addPoint(x, y);
-          }
-        }
+      if (cells_x != neighbor_size_x_ || cells_y != neighbor_size_y_) {
+        neighbor_size_x_ = cells_x;
+        neighbor_size_y_ = cells_y;
+        neighbor_lookup_.resize(neighbor_size_x_ * neighbor_size_y_);
       }
-      */
-    /*
-     int i = 0;
-     int j = 2;
-     while(i < 100)
-     {
-        addPoint(j,j);
-        j += 0.1;
-        i++;
-     }
+  
 
-     i = 0;
-     j = 50;
-     while(i < 100)
-     {
-        addPoint(j,j);
-        j += 0.1;
-        i++;
-     }
-    */
-
-   for(int i = 0; i < x.size();i++)
-   {
-      addPoint(x[i],y[i]);
-   }
-    /*
-    addPoint(10,10);
-    addPoint(9.8,9.8);
-    addPoint(9.8,10);
-    addPoint(10,9.8);
-    addPoint(10.1,10.1);
-    addPoint(10.1,9.8);
-    addPoint(9.7,9.8);
-    addPoint(9.6,9.6);
-    addPoint(9.5,9.5);
-
-
-
-     
-    addPoint(1,1);
-    addPoint(1.1,1.0);
-    addPoint(1.2,1.0);
-    addPoint(1.3,1.0);
-    addPoint(1.4,1.0);
-    */
-
-
-    //std::cout << " CostmapToPolygonsDBSMCCH::updateCostmap2D()2222" << std::endl;
+      for(int i = 0; i < x.size();i++)
+      {
+          addPoint(x[i],y[i]);
+      }
 
 }
 

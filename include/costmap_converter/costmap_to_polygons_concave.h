@@ -42,9 +42,6 @@
 #include <costmap_converter/costmap_to_polygons.h>
 #include <costmap_converter/misc.h>
 
-// dynamic reconfigure
-#include <costmap_converter/CostmapToPolygonsDBSConcaveHullConfig.h>
-#include <dynamic_reconfigure/server.h>
 
 
 namespace costmap_converter
@@ -77,7 +74,7 @@ class CostmapToPolygonsDBSConcaveHull : public CostmapToPolygonsDBSMCCH
      * @brief Initialize the plugin
      * @param nh Nodehandle that defines the namespace for parameters
      */
-    virtual void initialize(ros::NodeHandle nh);
+    virtual void initialize();
    
     
     /**
@@ -113,19 +110,7 @@ class CostmapToPolygonsDBSConcaveHull : public CostmapToPolygonsDBSMCCH
     
     double concave_hull_depth_;
 
-  private:
        
-    /**
-     * @brief Callback for the dynamic_reconfigure node.
-     * 
-     * This callback allows to modify parameters dynamically at runtime without restarting the node
-     * @param config Reference to the dynamic reconfigure config
-     * @param level Dynamic reconfigure level
-     */
-    void reconfigureCB(CostmapToPolygonsDBSConcaveHullConfig& config, uint32_t level);
-    
-    dynamic_reconfigure::Server<CostmapToPolygonsDBSConcaveHullConfig>* dynamic_recfg_; //!< Dynamic reconfigure server to allow config modifications at runtime    
-   
    
 }; 
 

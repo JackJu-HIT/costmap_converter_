@@ -49,6 +49,7 @@
 #include <costmap_converter/ObstacleArrayMsg.h>
 #include <memory>
 #include <boost/make_shared.hpp>
+#include "tool.h"
 
 
 namespace costmap_converter
@@ -101,14 +102,14 @@ public:
      * @sa updateCostmap2D
      * @param costmap Pointer to the costmap2d source
      */
-    virtual void setCostmap2D(std::vector<double> x,std::vector<double> y) = 0;
+    virtual void setCostmap2D(std::vector<double> x,std::vector<double> y,const costmapinfo &map) = 0;
     
     /**
      * @brief Get updated data from the previously set Costmap2D
      * @warning The plugin should handle the costmap's mutex locking.
      * @sa setCostmap2D
      */
-    virtual void updateCostmap2D(std::vector<double> x,std::vector<double> y)= 0; 
+    virtual void updateCostmap2D(std::vector<double> x,std::vector<double> y,const costmapinfo &map)= 0; 
     
      /**
      * @brief This method performs the actual work (conversion of the costmap to polygons)
@@ -199,36 +200,7 @@ public:
      */
     void startWorker()
     {
-      //setCostmap2D(std::vector<double>x,std::vector<double>y);
-      
-
-
-      /*
-      if (spin_thread_)
-      {
-        {
-          boost::mutex::scoped_lock terminate_lock(terminate_mutex_);
-          need_to_terminate_ = true;
-        }
-        spin_thread_->join();
-        delete spin_thread_;
-      }
-      
-      if (spin_thread)
-      {
-        ROS_DEBUG_NAMED("costmap_converter", "Spinning up a thread for the CostmapToPolygons plugin");
-        need_to_terminate_ = false;
-        spin_thread_ = new boost::thread(boost::bind(&BaseCostmapToPolygons::spinThread, this));
-        nh_.setCallbackQueue(&callback_queue_);
-      }
-      else
-      {
-        spin_thread_ = NULL;
-        nh_.setCallbackQueue(ros::getGlobalCallbackQueue());
-      }
-      
-      worker_timer_ = nh_.createTimer(rate, &BaseCostmapToPolygons::workerCallback, this);
-      */
+ 
       BaseCostmapToPolygons::workerCallback();
 
     }
@@ -238,18 +210,6 @@ public:
      */
     void stopWorker()
     {
-      /*
-      worker_timer_.stop();
-      if (spin_thread_)
-      {
-        {
-          boost::mutex::scoped_lock terminate_lock(terminate_mutex_);
-          need_to_terminate_ = true;
-        }
-        spin_thread_->join();
-        delete spin_thread_;
-      }
-      */
     }
 
 protected:
@@ -264,17 +224,6 @@ protected:
      */
     void spinThread()
     {
-      /*
-      while (nh_.ok())
-      {
-        {
-          boost::mutex::scoped_lock terminate_lock(terminate_mutex_);
-          if (need_to_terminate_)
-            break;
-        }
-        //callback_queue_.callAvailable(ros::WallDuration(0.1f));
-      }
-      */
     }
     
     /**
@@ -282,16 +231,12 @@ protected:
      */
     void workerCallback()
     {
-      //updateCostmap2D();
-      compute();
+        compute();
     }
     
 private:
-  //ros::Timer worker_timer_;
-  //ros::NodeHandle nh_;
-  boost::thread* spin_thread_;
-  //ros::CallbackQueue callback_queue_;
-  boost::mutex terminate_mutex_;
+
+
   bool need_to_terminate_;
 };    
 

@@ -39,46 +39,40 @@
 #include <costmap_converter/costmap_to_lines_ransac.h>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <pluginlib/class_list_macros.h>
-
-PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToLinesDBSRANSAC, costmap_converter::BaseCostmapToPolygons)
 
 namespace costmap_converter
 {
 
 CostmapToLinesDBSRANSAC::CostmapToLinesDBSRANSAC() : CostmapToPolygonsDBSMCCH() 
 {
-  dynamic_recfg_ = NULL;
+  
 }
 
 CostmapToLinesDBSRANSAC::~CostmapToLinesDBSRANSAC() 
 {
-  if (dynamic_recfg_ != NULL)
-    delete dynamic_recfg_;
+
+
 }
   
-void CostmapToLinesDBSRANSAC::initialize(ros::NodeHandle nh)
+void CostmapToLinesDBSRANSAC::initialize()
 { 
     // DB SCAN
-    nh.param("cluster_max_distance", parameter_.max_distance_, 0.4);
-    nh.param("cluster_min_pts", parameter_.min_pts_, 2);
-    nh.param("cluster_max_pts", parameter_.max_pts_, 30);
-    // convex hull (only necessary if outlier filtering is enabled)
-    nh.param("convex_hull_min_pt_separation", parameter_.min_keypoint_separation_, 0.1);
+    parameter_.max_distance_ = 0.4;
+    parameter_.min_pts_      = 2;
+    parameter_.max_pts_      = 30;
+    parameter_.min_keypoint_separation_ = 0.1;
+  
     parameter_buffered_ = parameter_;
 
     // ransac
-    nh.param("ransac_inlier_distance", ransac_inlier_distance_, 0.2);
-    nh.param("ransac_min_inliers", ransac_min_inliers_, 10);
-    nh.param("ransac_no_iterations", ransac_no_iterations_, 2000);
-    nh.param("ransac_remainig_outliers", ransac_remainig_outliers_, 3);
-    nh.param("ransac_convert_outlier_pts", ransac_convert_outlier_pts_, true);
-    nh.param("ransac_filter_remaining_outlier_pts", ransac_filter_remaining_outlier_pts_, false);
+    ransac_inlier_distance_     = 0.2;
+    ransac_min_inliers_         = 10;
+    ransac_no_iterations_       = 2000;
+    ransac_remainig_outliers_   = 3;
+    ransac_convert_outlier_pts_ = true;
     
-    // setup dynamic reconfigure
-    dynamic_recfg_ = new dynamic_reconfigure::Server<CostmapToLinesDBSRANSACConfig>(nh);
-    dynamic_reconfigure::Server<CostmapToLinesDBSRANSACConfig>::CallbackType cb = boost::bind(&CostmapToLinesDBSRANSAC::reconfigureCB, this, _1, _2);
-    dynamic_recfg_->setCallback(cb);
+    ransac_filter_remaining_outlier_pts_ = false;
+    
 }  
   
 void CostmapToLinesDBSRANSAC::compute()
@@ -235,7 +229,7 @@ bool CostmapToLinesDBSRANSAC::linearRegression(const std::vector<KeyPoint>& data
 {
   if (data.size() < 2)
   {
-    ROS_ERROR("CostmapToLinesDBSRANSAC: at least 2 data points required for linear regression");
+    printf("CostmapToLinesDBSRANSAC: at least 2 data points required for linear regression \n");
     return false;
   }
   
@@ -267,7 +261,7 @@ bool CostmapToLinesDBSRANSAC::linearRegression(const std::vector<KeyPoint>& data
   
   if (denominator == 0)
   {
-    ROS_ERROR("CostmapToLinesDBSRANSAC: linear regression failed, denominator 0");
+    printf("CostmapToLinesDBSRANSAC: linear regression failed, denominator 0 \n");
     return false;
   }
   else
@@ -275,22 +269,6 @@ bool CostmapToLinesDBSRANSAC::linearRegression(const std::vector<KeyPoint>& data
   
   intercept = mean_y - slope * mean_x;
   return true;
-}
-
-
-void CostmapToLinesDBSRANSAC::reconfigureCB(CostmapToLinesDBSRANSACConfig& config, uint32_t level)
-{
-    boost::mutex::scoped_lock lock(parameter_mutex_);
-    parameter_buffered_.max_distance_ = config.cluster_max_distance;
-    parameter_buffered_.min_pts_ = config.cluster_min_pts;
-    parameter_buffered_.max_pts_ = config.cluster_max_pts;
-    parameter_buffered_.min_keypoint_separation_ = config.cluster_min_pts;
-    ransac_inlier_distance_ = config.ransac_inlier_distance;
-    ransac_min_inliers_ = config.ransac_min_inliers;
-    ransac_no_iterations_ = config.ransac_no_iterations;
-    ransac_remainig_outliers_ = config.ransac_remainig_outliers;
-    ransac_convert_outlier_pts_ = config.ransac_convert_outlier_pts;
-    ransac_filter_remaining_outlier_pts_ = config.ransac_filter_remaining_outlier_pts;
 }
 
 
