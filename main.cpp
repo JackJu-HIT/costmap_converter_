@@ -11,9 +11,7 @@ using namespace std;
 int main()
 {
   
-  int k = 0;
-  while(k < 10)
-  {
+  
   costmap_converter::costmap_converter_manager clusterObj;
   
   clusterObj.init(costmap_converter::COSTMAP_TO_POLYGONS_DBSMCCH);
@@ -25,8 +23,8 @@ int main()
   for(int i = 0;i < x_arr.size();i++)
   {
        costmap_converter::obstaclePointsClouds tempPointClouds;
-       tempPointClouds.x = x_arr[i] * (-1);
-       tempPointClouds.y = y_arr[i] * (-1);
+       tempPointClouds.x = x_arr[i];
+       tempPointClouds.y = y_arr[i];
        obstacleClouds.push_back(tempPointClouds);
   }
 
@@ -37,7 +35,5 @@ int main()
   costmap_converter::ObstacleArrayConstPtr obstacles = clusterObj.getComputeClusterResults();
   
   clusterObj.show();
-  k++;
-  }
 
 }
